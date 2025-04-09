@@ -1,218 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Interactive Revision Quiz</title>
-  <!-- Favicon (using inline base64 so no separate file is needed) -->
+  <!-- Inline favicon so no extra file needed -->
   <link rel="icon" href="data:image/x-icon;base64,AAABAAEAICAAAAEAIACoEAAAFgAAACgAAAAQAAAAIAAAAAEAGAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///8AAAD///8AAAD///8AAA==" />
-  <!-- Load Pyodide from a CDN for running Python code -->
+  <!-- Load Pyodide from CDN -->
   <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      margin: 20px;
-      line-height: 1.6;
-    }
-    h1, h2 {
-      color: #333;
-    }
-    .section {
-      background: #fff;
-      padding: 20px;
-      border-radius: 5px;
-      margin-bottom: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .question {
-      margin-bottom: 15px;
-    }
-    textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      font-family: Consolas, monospace;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      box-sizing: border-box;
-    }
-    .hint {
-      display: none;
-      color: blue;
-      font-style: italic;
-      margin-top: 5px;
-    }
-    button {
-      padding: 10px 15px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      border-radius: 4px;
-      background: #007ACC;
-      color: #fff;
-      margin-top: 10px;
-    }
-    button:hover {
-      background: #005A9E;
-    }
-    #codeOutput, #result {
-      background: #272822;
-      color: #f8f8f2;
-      padding: 10px;
-      border-radius: 3px;
-      font-family: Consolas, monospace;
-      font-size: 14px;
-      margin-top: 10px;
-      white-space: pre-wrap;
-    }
+    body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 20px; line-height: 1.6; }
+    h1, h2 { color: #333; }
+    .section { background: #fff; padding: 20px; border-radius: 5px; margin-bottom: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .question { margin-bottom: 15px; }
+    textarea { width: 100%; padding: 10px; margin: 8px 0; font-family: Consolas, monospace; border: 1px solid #ccc; border-radius: 3px; box-sizing: border-box; }
+    .hint { display: none; color: blue; font-style: italic; margin-top: 5px; }
+    button { padding: 10px 15px; font-size: 16px; border: none; border-radius: 4px; background: #007ACC; color: #fff; cursor: pointer; margin-top: 10px; }
+    button:hover { background: #005A9E; }
+    #codeOutput, #result { background: #272822; color: #f8f8f2; padding: 10px; border-radius: 3px; font-family: Consolas, monospace; font-size: 14px; margin-top: 10px; white-space: pre-wrap; }
   </style>
 </head>
 <body>
-  <!-- Introduction Section -->
+  <!-- Intro -->
   <div class="section">
     <h1>Interactive Revision Quiz</h1>
-    <p>Welcome! This quiz contains three parts:</p>
+    <p>This quiz has three parts:</p>
     <ol>
-      <li><strong>Multiple Choice:</strong> Select the correct option.</li>
-      <li><strong>Short Answer:</strong> Type your explanation and click "Show Hint" if needed.</li>
-      <li><strong>Coding Challenge:</strong> Write Python code, run it using Pyodide, and see the output or errors.</li>
+      <li><strong>Multiple Choice</strong></li>
+      <li><strong>Short Answer</strong></li>
+      <li><strong>Coding Challenge</strong> (run Python right here!)</li>
     </ol>
   </div>
-  
-  <!-- Section 1: Multiple Choice Question -->
+
+  <!-- MCQ -->
   <div class="section">
     <h2>Question 1: Multiple Choice</h2>
     <div class="question">
       <p><strong>What does HTML stand for?</strong></p>
-      <label><input type="radio" name="q1" value="A"> A) HyperText Markup Language</label>
-      <label><input type="radio" name="q1" value="B"> B) Home Tool Markup Language</label>
-      <label><input type="radio" name="q1" value="C"> C) Hyperlinks and Text Markup Language</label>
+      <label><input type="radio" name="q1" value="A"> A) HyperText Markup Language</label><br>
+      <label><input type="radio" name="q1" value="B"> B) Home Tool Markup Language</label><br>
+      <label><input type="radio" name="q1" value="C"> C) Hyperlinks and Text Markup Language</label><br>
       <label><input type="radio" name="q1" value="D"> D) None of the above</label>
     </div>
   </div>
-  
-  <!-- Section 2: Short Answer Question -->
+
+  <!-- Short Answer -->
   <div class="section">
     <h2>Question 2: Short Answer</h2>
     <div class="question">
-      <p><strong>Explain briefly one benefit of using functions in your code.</strong></p>
-      <textarea id="shortAnswer" rows="3" placeholder="Type your answer here..."></textarea>
+      <p><strong>Explain one benefit of using functions in your code.</strong></p>
+      <textarea id="shortAnswer" rows="3" placeholder="Type your answer..."></textarea><br>
       <button onclick="toggleHint('hintShort')">Show Hint</button>
       <div id="hintShort" class="hint">
-        Hint: Functions make your code modular—allowing you to reuse code and organize it better.
+        Functions let you break code into reusable, modular pieces—making maintenance and debugging easier.
       </div>
     </div>
   </div>
-  
-  <!-- Section 3: Coding Challenge -->
+
+  <!-- Coding Challenge -->
   <div class="section">
     <h2>Question 3: Coding Challenge</h2>
     <div class="question">
-      <p><strong>Write a Python function named <code>greet</code> that takes one parameter, <em>name</em>, and prints "Hello, &lt;name&gt;!"</strong></p>
-      <textarea id="codeInput" rows="5" placeholder='e.g., def greet(name):&#10;    print("Hello, " + name + "!")'></textarea>
-      <br>
+      <p><strong>Write a Python function <code>greet(name)</code> that prints "Hello, &lt;name&gt;!"</strong></p>
+      <textarea id="codeInput" rows="5" placeholder='e.g., def greet(name):&#10;    print("Hello, " + name + "!")'></textarea><br>
       <button onclick="toggleHint('hintCode')">Show Code Starter</button>
       <div id="hintCode" class="hint">
-        Code Starter:<br>
-        <code>def greet(name):<br>&nbsp;&nbsp;&nbsp;&nbsp;# Write your code here</code>
-      </div>
-      <br>
+        <code>def greet(name):<br>&nbsp;&nbsp;&nbsp;&nbsp;# your code here</code>
+      </div><br>
       <button onclick="runCode()">Run Code</button>
-      <h3>Code Output:</h3>
+      <h3>Output:</h3>
       <pre id="codeOutput"></pre>
     </div>
   </div>
-  
-  <!-- Final Section: Submit Quiz and Display Feedback -->
+
+  <!-- Submit & Feedback -->
   <div class="section">
     <button onclick="submitQuiz()">Submit Answers</button>
-    <h2>Quiz Result:</h2>
+    <h2>Result:</h2>
     <pre id="result"></pre>
   </div>
-  
-  <!-- Pyodide and JavaScript Code -->
+
   <script>
-    // Global variable for Pyodide instance
-    let pyodide = null;
-    
-    // Asynchronously load Pyodide
-    async function loadPyodideAndPackages() {
-      console.log("Loading Pyodide...");
-      try {
-        pyodide = await loadPyodide();
-        console.log("Pyodide loaded successfully.");
-      } catch (error) {
-        console.error("Error loading Pyodide:", error);
-      }
+    // 1) Load Pyodide
+    let pyodideReady = loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/" });
+
+    // 2) Hint toggle
+    function toggleHint(id) {
+      const h = document.getElementById(id);
+      h.style.display = (h.style.display === "block") ? "none" : "block";
     }
-    loadPyodideAndPackages();
-    
-    // Toggle hint visibility
-    function toggleHint(hintId) {
-      const hint = document.getElementById(hintId);
-      hint.style.display = (hint.style.display === "block") ? "none" : "block";
-    }
-    
-    // Function to run Python code from the coding challenge using Pyodide
+
+    // 3) Run Python code
     async function runCode() {
-      const outputElement = document.getElementById("codeOutput");
-      outputElement.textContent = "";  // Clear previous output
-      
-      if (pyodide === null) {
-        outputElement.textContent = "Pyodide is still loading. Please wait and try again.";
-        console.warn("Pyodide not loaded yet.");
+      const out = document.getElementById("codeOutput");
+      out.textContent = ""; 
+      const code = document.getElementById("codeInput").value;
+      const pyodide = await pyodideReady;
+      if (!pyodide) {
+        out.textContent = "Error loading Python runtime.";
         return;
       }
-      
-      const code = document.getElementById("codeInput").value;
-      console.log("Running code:", code);
-      
-      // Configure Pyodide and run the code asynchronously
-      Sk.configure({ output: (text) => outputElement.textContent += text, read: builtinRead });
-      
       try {
-        await Sk.misceval.asyncToPromise(function() {
-          return Sk.importMainWithBody("<stdin>", false, code, true);
+        await pyodide.runPythonAsync(code, {
+          stdout: s => out.textContent += s,
+          stderr: s => out.textContent += "Error: " + s
         });
-        console.log("Code executed successfully.");
-      } catch (err) {
-        outputElement.textContent += "Error: " + err.toString();
-        console.error("Execution error:", err);
+      } catch (e) {
+        out.textContent += "Exception: " + e;
       }
     }
-    
-    // Required built-in read function for Pyodide
-    function builtinRead(x) {
-      if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
-          throw "File not found: '" + x + "'";
-      return Sk.builtinFiles["files"][x];
-    }
-    
-    // Function to check quiz answers and provide overall feedback
+
+    // 4) Submit quiz
     function submitQuiz() {
-      let feedback = "";
-      let score = 0;
-      
-      // Check MCQ Answer (Question 1)
-      const mcq = document.querySelector('input[name="q1"]:checked');
-      if (mcq && mcq.value === "A") {
-        score++;
-        feedback += "Question 1 (MCQ): Correct!\n";
+      let score = 0, feedback = "";
+
+      // MCQ
+      const mc = document.querySelector('input[name="q1"]:checked');
+      if (mc && mc.value === "A") { score++; feedback += "Q1: Correct\n"; }
+      else { feedback += "Q1: Wrong (answer A)\n"; }
+
+      // Short answer
+      const sa = document.getElementById("shortAnswer").value.toLowerCase();
+      if (sa.includes("reuse")||sa.includes("modular")||sa.includes("debug")) {
+        score++; feedback += "Q2: Looks good\n";
       } else {
-        feedback += "Question 1 (MCQ): Incorrect. The correct answer is A) HyperText Markup Language.\n";
+        feedback += "Q2: Consider code reuse and modularity\n";
       }
-      
-      // Evaluate Short Answer (Question 2) via simple keyword matching
-      const shortAns = document.getElementById("shortAnswer").value.toLowerCase();
-      if (shortAns.includes("reuse") || shortAns.includes("modular") || shortAns.includes("organize")) {
-        score++;
-        feedback += "Question 2 (Short Answer): Likely correct.\n";
-      } else {
-        feedback += "Question 2 (Short Answer): Consider that functions allow code reuse and better organization.\n";
-      }
-      
-      feedback += "\nFor Question 3 (Coding Challenge), please review the Code Output above to see if your code works correctly.";
-      feedback += "\n\nYour overall quiz score (MCQ + Short Answer): " + score + " out of 2";
+
+      feedback += "\nFor Q3, check the Output above to see if your code works.";
+      feedback += `\n\nScore (Q1+Q2): ${score}/2`;
       document.getElementById("result").textContent = feedback;
     }
   </script>
