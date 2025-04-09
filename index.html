@@ -5,120 +5,106 @@
   <title>Interactive Revision Quiz</title>
   <!-- Inline favicon -->
   <link rel="icon" href="data:image/x-icon;base64,AAABAAEAICAAAAEAIACoEAAAFgAAACgAAAAQAAAAIAAAAAEAGAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///8AAAD///8AAAD///8AAA==" />
-  <!-- Pyodide -->
+  <!-- Load Pyodide -->
   <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 20px; line-height: 1.6; }
-    h1,h2 { color: #333; }
-    .section { background: #fff; padding: 20px; border-radius:5px; margin-bottom:20px; box-shadow:0 0 10px rgba(0,0,0,0.1); }
-    .question { margin-bottom:15px; }
-    textarea { width:100%; padding:10px; margin:8px 0; font-family:Consolas, monospace; border:1px solid #ccc; border-radius:3px; box-sizing:border-box; }
-    .hint { display:none; color:blue; font-style:italic; margin-top:5px; }
-    button { padding:10px 15px; font-size:16px; border:none; border-radius:4px; background:#007ACC; color:#fff; cursor:pointer; margin-top:10px; }
-    button:hover { background:#005A9E; }
-    #codeOutput, #result { background:#272822; color:#f8f8f2; padding:10px; border-radius:3px; font-family:Consolas, monospace; font-size:14px; margin-top:10px; white-space:pre-wrap; }
+    body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 20px; }
+    .section { background: white; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
+    textarea { width: 100%; font-family: monospace; padding: 8px; }
+    button { padding: 8px 12px; margin-top: 8px; background: #007ACC; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #005A9E; }
+    #codeOutput, #result { background: #272822; color: #f8f8f2; padding: 10px; margin-top: 10px; white-space: pre-wrap; font-family: monospace; }
   </style>
 </head>
 <body>
 
-  <!-- Intro -->
   <div class="section">
     <h1>Interactive Revision Quiz</h1>
-    <p>Three parts: (1) MCQ, (2) Short Answer, (3) Coding Challenge. The code runner will <em>automatically</em> call your function with <code>"World"</code>.</p>
   </div>
 
-  <!-- MCQ -->
   <div class="section">
-    <h2>Q1: Multiple Choice</h2>
-    <div class="question">
-      <p><strong>What does HTML stand for?</strong></p>
-      <label><input type="radio" name="q1" value="A"> A) HyperText Markup Language</label><br>
-      <label><input type="radio" name="q1" value="B"> B) Home Tool Markup Language</label><br>
-      <label><input type="radio" name="q1" value="C"> C) Hyperlinks and Text Markup Language</label><br>
-      <label><input type="radio" name="q1" value="D"> D) None of the above</label>
+    <h2>Q1: What does HTML stand for?</h2>
+    <label><input type="radio" name="q1" value="A"> HyperText Markup Language</label><br>
+    <label><input type="radio" name="q1" value="B"> Home Tool Markup Language</label><br>
+    <label><input type="radio" name="q1" value="C"> Hyperlinks and Text Markup Language</label><br>
+    <label><input type="radio" name="q1" value="D"> None of the above</label>
+  </div>
+
+  <div class="section">
+    <h2>Q2: One benefit of functions?</h2>
+    <textarea id="shortAnswer" rows="2" placeholder="Your answer…"></textarea><br>
+    <button onclick="toggleHint('hint2')">Show Hint</button>
+    <div id="hint2" style="display:none;color:blue;font-style:italic;">
+      Functions let you reuse code and keep it organized.
     </div>
   </div>
 
-  <!-- Short Answer -->
   <div class="section">
-    <h2>Q2: Short Answer</h2>
-    <div class="question">
-      <p><strong>Explain one benefit of using functions in your code.</strong></p>
-      <textarea id="shortAnswer" rows="3" placeholder="Type your answer..."></textarea><br>
-      <button onclick="toggleHint('hintShort')">Show Hint</button>
-      <div id="hintShort" class="hint">
-        Functions make code modular and reusable, which helps with organization and debugging.
-      </div>
-    </div>
+    <h2>Q3: Coding – define <code>greet(name)</code></h2>
+    <textarea id="codeInput" rows="4" placeholder='def greet(name):&#10;    print("Hello, " + name + "!")'></textarea><br>
+    <button onclick="toggleHint('hint3')">Show Code Starter</button>
+    <div id="hint3" style="display:none;color:blue;font-style:italic;">
+      def greet(name):<br>&nbsp;&nbsp;# your code here
+    </div><br>
+    <button onclick="runCode()">Run Code</button>
+    <h3>Output:</h3>
+    <pre id="codeOutput"></pre>
   </div>
 
-  <!-- Coding Challenge -->
-  <div class="section">
-    <h2>Q3: Coding Challenge</h2>
-    <div class="question">
-      <p><strong>Write a Python function <code>greet(name)</code> that prints "Hello, &lt;name&gt;!"</strong></p>
-      <textarea id="codeInput" rows="5" placeholder='e.g., def greet(name):&#10;    print("Hello, " + name + "!")'></textarea><br>
-      <button onclick="toggleHint('hintCode')">Show Code Starter</button>
-      <div id="hintCode" class="hint">
-        <code>def greet(name):<br>&nbsp;&nbsp;&nbsp;&nbsp;# your code here</code>
-      </div><br>
-      <button onclick="runCode()">Run Code</button>
-      <h3>Output:</h3>
-      <pre id="codeOutput"></pre>
-    </div>
-  </div>
-
-  <!-- Submit -->
   <div class="section">
     <button onclick="submitQuiz()">Submit Answers</button>
-    <h2>Quiz Result:</h2>
+    <h2>Result:</h2>
     <pre id="result"></pre>
   </div>
 
   <script>
-    // 1) Prepare Pyodide
-    const pyodideReady = loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/" });
+    // Load Pyodide
+    const pyodideReady = loadPyodide({
+      indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/"
+    }).then(() => console.log("✅ Pyodide loaded"));
 
-    // 2) Hint toggles
+    // Toggle hints
     function toggleHint(id) {
-      const h = document.getElementById(id);
-      h.style.display = (h.style.display === "block") ? "none" : "block";
+      const d = document.getElementById(id);
+      d.style.display = d.style.display === "block" ? "none" : "block";
     }
 
-    // 3) Run code + auto-call greet("World")
+    // Run code, auto-call greet("World")
     async function runCode() {
-      const out = document.getElementById("codeOutput");
-      out.textContent = ""; 
-      const userCode = document.getElementById("codeInput").value;
-      const testCode = `${userCode}\n\ngreet("World")`;
+      console.log("▶ runCode() called");
+      const outEl = document.getElementById("codeOutput");
+      outEl.textContent = "";
+      const user = document.getElementById("codeInput").value;
+      const code = user + "\n\ngreet('World')";
       const pyodide = await pyodideReady;
       if (!pyodide) {
-        out.textContent = "Failed to load Python runtime.";
+        outEl.textContent = "❌ Pyodide failed to load";
         return;
       }
       try {
-        await pyodide.runPythonAsync(testCode, {
-          stdout: s => out.textContent += s,
-          stderr: s => out.textContent += "Error: " + s
+        await pyodide.runPythonAsync(code, {
+          stdout: s => outEl.textContent += s,
+          stderr: s => outEl.textContent += "Error: " + s
         });
-      } catch (e) {
-        out.textContent += "Exception: " + e;
+        console.log("✅ Code ran");
+      } catch (err) {
+        outEl.textContent += "Exception: " + err;
+        console.error(err);
       }
     }
 
-    // 4) Submit quiz feedback
+    // Submit quiz feedback
     function submitQuiz() {
-      let score=0, fb="";
+      let score = 0, fb = "";
       // Q1
       const mc = document.querySelector('input[name="q1"]:checked');
-      if (mc && mc.value==="A") { score++; fb+="Q1: Correct\n"; }
-      else fb+="Q1: Wrong (A)\n";
+      if (mc && mc.value === "A") { score++; fb += "Q1 correct\n"; }
+      else fb += "Q1 wrong (answer A)\n";
       // Q2
       const sa = document.getElementById("shortAnswer").value.toLowerCase();
-      if (sa.includes("reuse")||sa.includes("modular")) { score++; fb+="Q2: Good\n"; }
-      else fb+="Q2: Think about code reuse.\n";
-      fb+="\nFor Q3, check the Output above.";
-      fb+=`\n\nScore (Q1+Q2): ${score}/2`;
+      if (sa.includes("reuse")||sa.includes("organize")) { score++; fb += "Q2 ok\n"; }
+      else fb += "Q2 think about reuse\n";
+      fb += `\nFor Q3, see the Output above.\nScore (Q1+Q2): ${score}/2`;
       document.getElementById("result").textContent = fb;
     }
   </script>
